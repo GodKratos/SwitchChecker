@@ -30,7 +30,7 @@ namespace SwitchChecker
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Search Results");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Search Results");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +53,7 @@ namespace SwitchChecker
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.panel2 = new System.Windows.Forms.Panel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
@@ -158,6 +159,7 @@ namespace SwitchChecker
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.textBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -172,7 +174,7 @@ namespace SwitchChecker
             this.button1.Location = new System.Drawing.Point(898, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 25);
-            this.button1.TabIndex = 2;
+            this.button1.TabIndex = 3;
             this.button1.Text = "Search";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -184,7 +186,7 @@ namespace SwitchChecker
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(2, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(890, 20);
+            this.textBox1.Size = new System.Drawing.Size(779, 20);
             this.textBox1.TabIndex = 1;
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
@@ -194,10 +196,10 @@ namespace SwitchChecker
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode3.Name = "Search Results";
-            treeNode3.Text = "Search Results";
+            treeNode1.Name = "Search Results";
+            treeNode1.Text = "Search Results";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.treeView1.ShowNodeToolTips = true;
             this.treeView1.ShowRootLines = false;
             this.treeView1.Size = new System.Drawing.Size(145, 572);
@@ -246,6 +248,22 @@ namespace SwitchChecker
             this.saveFileDialog1.FileName = "MacList.xls";
             this.saveFileDialog1.Filter = "Excel Files|*.xls|All Files|*.*";
             this.saveFileDialog1.InitialDirectory = "C:\\Windows\\assembly\\GAC_MSIL\\System.Design\\2.0.0.0__b03f5f7f11d50a3a";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "All",
+            "Description",
+            "IP Address",
+            "MAC Address"});
+            this.comboBox1.Location = new System.Drawing.Point(787, 2);
+            this.comboBox1.MaxDropDownItems = 3;
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(105, 21);
+            this.comboBox1.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -300,6 +318,7 @@ namespace SwitchChecker
         private TreeNode treeNode1;
         private ToolStripMenuItem editSwitchesToolStripMenuItem;
         private SaveFileDialog saveFileDialog1;
+        private ComboBox comboBox1;
     }
 }
 

@@ -30,6 +30,7 @@ namespace SwitchChecker
         public MainForm()
         {
             InitializeComponent();
+            comboBox1.SelectedIndex = 0;
             if (!Directory.Exists(DATA_PATH))
                 Directory.CreateDirectory(DATA_PATH);
             worker.DoWork += new DoWorkEventHandler(worker_DoWork);
@@ -77,26 +78,67 @@ namespace SwitchChecker
         private void performSearch()
         {
             string searchText = textBox1.Text.ToLower();
+
+            //MessageBox.Show("\"" + Regex.Replace(searchText, @"[^0-9a-zA-Z]", "") + "\"");
+            //return;
+            
             if (searchText.Length < 1)
                 return;
 
             string[] macs = null;
 
-            if (ipList.Count > 0)
-                macs = ipList.GetValues(searchText);
-
-            if (macs == null)
-            {
-                if (searchText.Length >= 17 && Regex.IsMatch(searchText.Substring(0, 17), @"([0-9a-f][0-9a-f][:-]){5}([0-9a-f][0-9a-f])"))
-                    macs = new string[] { searchText.Substring(0, 2) + searchText.Substring(3, 2) + "." + searchText.Substring(6, 2) +
-                        searchText.Substring(9, 2) + "." + searchText.Substring(12, 2) + searchText.Substring(15, 2) };
-                else if (searchText.Length >= 14 && Regex.IsMatch(searchText.Substring(0, 14), @"([0-9a-f]{4}\.){2}[0-9a-f]{4}"))
-                    macs = new string[] { searchText.Substring(0, 14) };
-            }
-
             treeView1.SelectedNode = treeView1.Nodes[0];
 
             searchForm.dgvSearch.Rows.Clear();
+            // comboBox1.SelectedIndex : 0 - All, 1 - Description, 2 - IP Address, 3 - MAC Address
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0: // All
+                    if (ipList.Count > 0)
+                        macs = ipList.GetValues(searchText);
+
+                    if (macs == null)
+                    {
+                        if (searchText.Length >= 17 && Regex.IsMatch(searchText.Substring(0, 17), @"([0-9a-f][0-9a-f][:-]){5}([0-9a-f][0-9a-f])"))
+                            macs = new string[] { searchText.Substring(0, 2) + searchText.Substring(3, 2) + "." + searchText.Substring(6, 2) +
+                        searchText.Substring(9, 2) + "." + searchText.Substring(12, 2) + searchText.Substring(15, 2) };
+                        else if (searchText.Length >= 14 && Regex.IsMatch(searchText.Substring(0, 14), @"([0-9a-f]{4}\.){2}[0-9a-f]{4}"))
+                            macs = new string[] { searchText.Substring(0, 14) };
+                    }
+                    break;
+                case 1: // Description
+                    break;
+                case 2: // IP Address
+                    Collection<string> tempMacs = new Collection<string>();
+                    foreach (string key in ipList.Keys)
+                    {
+                        if (key.IndexOf(searchText) >= 0)
+                        {
+                            foreach (string mac in ipList.GetValues(key))
+                                tempMacs.Add(mac);
+                        }
+                    }
+                    macs = tempMacs.ToArray();
+                    break;
+                case 3: // MAC Address
+                    foreach (SwitchInfo sw in switches)
+                    {
+                        foreach (SwitchPort prt in sw.Ports)
+                        {
+                            foreach (string prtMac in prt.getMacs())
+                            {
+                                if (Regex.Replace(prtMac, @"[^0-9a-z]", "").IndexOf(Regex.Replace(searchText, @"[^0-9a-z]", "")) >= 0)
+                                {
+                                    searchForm.dgvSearch.Rows.Add(new string[] { prtMac, sw.Name, prt.Name, prt.Description });
+                                }
+                            }
+                        }
+                    }
+                    return;
+                default:
+                    break;
+            }
+
             foreach (SwitchInfo sw in switches)
             {
                 foreach (SwitchPort prt in sw.Ports)
