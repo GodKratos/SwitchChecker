@@ -231,6 +231,7 @@ namespace SwitchChecker
                 }
                 xd.Save(filename);
             }
+            switchUpdated = false;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
