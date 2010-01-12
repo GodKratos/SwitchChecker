@@ -52,10 +52,10 @@ namespace SwitchChecker.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DefaultPassword {
             get {
-                return ((string)(this["DefaultPassword"]));
+                return Functions.DecryptPassword((string)(this["DefaultPassword"]));
             }
             set {
-                this["DefaultPassword"] = value;
+                this["DefaultPassword"] = Functions.EncryptPassword(value);
             }
         }
     }
