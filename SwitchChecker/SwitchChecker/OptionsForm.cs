@@ -21,7 +21,7 @@ namespace SwitchChecker
         {
             txtTimeout.Text = Properties.Settings.Default.Timeout.ToString();
             txtUserName.Text = Properties.Settings.Default.DefaultUserName;
-            txtPassword.Text = Properties.Settings.Default.DefaultPassword;
+            txtPassword.Text = Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword);
         }
 
         private void StoreValues()
@@ -35,7 +35,7 @@ namespace SwitchChecker
 
             Properties.Settings.Default.Timeout = Math.Max(timeout, 1);
             Properties.Settings.Default.DefaultUserName = txtUserName.Text;
-            Properties.Settings.Default.DefaultPassword = txtPassword.Text;
+            Properties.Settings.Default.DefaultEncryptedPassword = Functions.EncryptPassword(txtPassword.Text);
             Properties.Settings.Default.Save();
 
             Close();

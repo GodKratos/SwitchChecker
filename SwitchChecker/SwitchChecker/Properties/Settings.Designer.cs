@@ -50,12 +50,12 @@ namespace SwitchChecker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultPassword {
+        public string DefaultEncryptedPassword {
             get {
-                return Functions.DecryptPassword((string)(this["DefaultPassword"]));
+                return ((string)(this["DefaultEncryptedPassword"]));
             }
             set {
-                this["DefaultPassword"] = Functions.EncryptPassword(value);
+                this["DefaultEncryptedPassword"] = value;
             }
         }
     }

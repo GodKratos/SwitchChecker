@@ -376,7 +376,7 @@ namespace SwitchChecker
 
                 //If no username specified use defaults for username and password
                 string username = (string.IsNullOrEmpty(sw.UserName) ? Properties.Settings.Default.DefaultUserName : sw.UserName);
-                string password = (string.IsNullOrEmpty(sw.UserName) ? Properties.Settings.Default.DefaultPassword : sw.Password);
+                string password = (string.IsNullOrEmpty(sw.UserName) ? Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword) : sw.Password);
 
                 tc.WaitAndSend(new byte[] { 255, 251, 1 }, new byte[] { 255, 253, 1 });
                 tc.WaitAndSend(new byte[] { 255, 251, 3 }, new byte[] { 255, 253, 3, 255, 251, 24, 255, 251, 31 });
