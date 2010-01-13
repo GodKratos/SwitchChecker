@@ -33,14 +33,17 @@ namespace SwitchChecker
             listView1.EndUpdate();
         }
 
-        private void btnOK_Click(object sender, EventArgs e)
+        private void EditSwitchesForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (update)
             {
                 _mainForm.populateTabData();
                 _mainForm.switchUpdated = true;
             }
+        }
             
+        private void btnOK_Click(object sender, EventArgs e)
+        {
             Close();
         }
 
@@ -62,9 +65,6 @@ namespace SwitchChecker
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems == null)
-                return;
-
             Form frm = new EditSwitchForm();
             DialogResult dr = frm.ShowDialog(this);
             if (dr == DialogResult.OK)
@@ -73,5 +73,39 @@ namespace SwitchChecker
                 populateListData();
             }
         }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems == null || listView1.SelectedItems.Count < 1)
+                return;
+
+            DialogResult dr = MessageBox.Show("This will delete all data associated with the current switch.\r\n\r\nAre you sure you wish to continue?",
+                "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (dr != DialogResult.Yes)
+                return;
+
+            MainForm.deleteSwitch(MainForm.getSwitch(listView1.SelectedItems[0].SubItems[0].Text));
+            update = true;
+            populateListData();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("This will delete all existing switch data and cannot be undone.\r\n\r\nAre you sure you wish to continue?",
+                "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (dr != DialogResult.Yes)
+                return;
+
+            SwitchInfo[] switches = MainForm.switches.ToArray();
+
+            foreach (SwitchInfo sw in switches)
+                MainForm.deleteSwitch(sw);
+
+            update = true;
+            populateListData();
+        }
+
     }
 }

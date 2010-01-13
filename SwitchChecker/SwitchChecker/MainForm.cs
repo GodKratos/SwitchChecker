@@ -20,7 +20,7 @@ namespace SwitchChecker
 {
     public partial class MainForm : Form
     {
-        private string DATA_PATH = "SwitchData\\";
+        private static string DATA_PATH = "SwitchData\\";
         public static Collection<SwitchInfo> switches = new Collection<SwitchInfo>();
         private NameValueCollection ipList = new NameValueCollection();
         private SearchForm searchForm;
@@ -274,6 +274,17 @@ namespace SwitchChecker
                 xd.Save(filename);
             }
             switchUpdated = false;
+        }
+
+
+        public static void deleteSwitch(SwitchInfo swtch)
+        {
+            string filename = DATA_PATH + swtch.Name + ".xml";
+
+            MainForm.switches.Remove(swtch);
+
+            if (File.Exists(filename))
+                File.Delete(filename);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
