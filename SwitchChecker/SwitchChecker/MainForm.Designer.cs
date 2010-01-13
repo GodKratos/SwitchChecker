@@ -45,6 +45,7 @@ namespace SwitchChecker
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -53,7 +54,6 @@ namespace SwitchChecker
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.panel2 = new System.Windows.Forms.Panel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statusBarPanel1)).BeginInit();
@@ -168,6 +168,22 @@ namespace SwitchChecker
             this.panel1.Size = new System.Drawing.Size(973, 25);
             this.panel1.TabIndex = 2;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "All",
+            "Description",
+            "IP Address",
+            "MAC Address"});
+            this.comboBox1.Location = new System.Drawing.Point(787, 2);
+            this.comboBox1.MaxDropDownItems = 3;
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(105, 21);
+            this.comboBox1.TabIndex = 2;
+            // 
             // button1
             // 
             this.button1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -204,6 +220,7 @@ namespace SwitchChecker
             this.treeView1.ShowRootLines = false;
             this.treeView1.Size = new System.Drawing.Size(145, 572);
             this.treeView1.TabIndex = 3;
+            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // statusBar1
@@ -248,22 +265,6 @@ namespace SwitchChecker
             this.saveFileDialog1.FileName = "MacList.xls";
             this.saveFileDialog1.Filter = "Excel Files|*.xls|All Files|*.*";
             this.saveFileDialog1.InitialDirectory = "C:\\Windows\\assembly\\GAC_MSIL\\System.Design\\2.0.0.0__b03f5f7f11d50a3a";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "All",
-            "Description",
-            "IP Address",
-            "MAC Address"});
-            this.comboBox1.Location = new System.Drawing.Point(787, 2);
-            this.comboBox1.MaxDropDownItems = 3;
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(105, 21);
-            this.comboBox1.TabIndex = 2;
             // 
             // MainForm
             // 

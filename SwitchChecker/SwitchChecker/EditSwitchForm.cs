@@ -46,16 +46,20 @@ namespace SwitchChecker
                 return;
             }
 
+            bool result = false;
             if (editingSwitch != null)
-                editSwitch();
+                result = editSwitch();
             else
-                addSwitch();
+                result = addSwitch();
 
-            this.DialogResult = DialogResult.OK;
-            Close();
+            if (result)
+            {
+                this.DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
-        private void editSwitch()
+        private bool editSwitch()
         {
             if (!editingSwitch.Name.Equals(txtName.Text) || !editingSwitch.Address.Equals(txtAddress.Text))
             {
@@ -64,13 +68,13 @@ namespace SwitchChecker
                     if (!editingSwitch.Name.Equals(txtName.Text) && sw.Name.ToLower().Trim().Equals(txtName.Text.ToLower().Trim()))
                     {
                         MessageBox.Show("That switch name is already in use, please try something else.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        return false;
                     }
 
                     if (!editingSwitch.Address.Equals(txtAddress.Text) && sw.Address.ToLower().Trim().Equals(txtAddress.Text.ToLower().Trim()))
                     {
                         MessageBox.Show("That switch address is already in use, please try something else.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        return false;
                     }
                 }
             }
@@ -79,27 +83,29 @@ namespace SwitchChecker
             editingSwitch.Address = txtAddress.Text;
             editingSwitch.UserName = txtUserName.Text;
             editingSwitch.Password = txtPassword.Text;
+            return true;
         }
 
-        private void addSwitch()
+        private bool addSwitch()
         {
             foreach (SwitchInfo sw in MainForm.switches)
             {
                 if (sw.Name.ToLower().Trim().Equals(txtName.Text.ToLower().Trim()))
                 {
                     MessageBox.Show("That switch name is already in use, please try something else.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    return false;
                 }
 
                 if (sw.Address.ToLower().Trim().Equals(txtAddress.Text.ToLower().Trim()))
                 {
                     MessageBox.Show("That switch address is already in use, please try something else.", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    return false;
                 }
             }
 
             SwitchInfo swtch = new SwitchInfo(txtName.Text, txtAddress.Text, txtUserName.Text, Functions.EncryptPassword(txtPassword.Text));
             MainForm.switches.Add(swtch);
+            return true;
         }
     }
 }
