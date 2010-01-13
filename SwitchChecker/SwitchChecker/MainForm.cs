@@ -785,5 +785,22 @@ namespace SwitchChecker
             frm.ShowDialog(this);
         }
 
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode == treeView1.Nodes[0])
+                return;
+
+            SwitchInfo sw = getSwitch(treeView1.SelectedNode.Name);
+
+            Form frm = new EditSwitchForm(sw);
+            DialogResult dr = frm.ShowDialog(this);
+
+            if (dr == DialogResult.OK)
+            {
+                populateTabData();
+                switchUpdated = true;
+            }
+        }
+
     }
 }
