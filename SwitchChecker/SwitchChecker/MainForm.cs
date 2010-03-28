@@ -26,6 +26,7 @@ namespace SwitchChecker
         private SearchForm searchForm;
         BackgroundWorker worker = new BackgroundWorker();
         public bool switchUpdated = false;
+        private bool updating = false;
 
         public MainForm()
         {
@@ -337,9 +338,10 @@ namespace SwitchChecker
 
         public void populateTabData()
         {
+            updating = true;
             while (treeView1.Nodes.Count > 1)
                 treeView1.Nodes.RemoveAt(1);
-            //treeView1.Nodes..Clear();
+            //treeView1.Nodes.Clear();
             //treeView1.Nodes.Add(treeNode1);
 
             foreach (SwitchInfo sw in switches)
@@ -350,6 +352,9 @@ namespace SwitchChecker
                 
                 this.treeView1.Nodes.Add(tn);
             }
+            updating = false;
+            treeView1.SelectedNode = null;
+            treeView1.SelectedNode = treeView1.Nodes[0];
         }
 
         private void updateSwitch(SwitchInfo sw)
@@ -697,6 +702,9 @@ namespace SwitchChecker
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (updating)
+                return;
+
             bool found = false;
 
             foreach (Form frm in MdiChildren)
@@ -772,6 +780,11 @@ namespace SwitchChecker
             if (e.Button != MouseButtons.Left || treeView1.SelectedNode == null || treeView1.SelectedNode == treeView1.Nodes[0])
                 return;
 
+            editSwitchNode();
+        }
+
+        private void editSwitchNode()
+        {
             SwitchInfo sw = getSwitch(treeView1.SelectedNode.Name);
 
             Form frm = new EditSwitchForm(sw);
@@ -782,6 +795,32 @@ namespace SwitchChecker
                 populateTabData();
                 switchUpdated = true;
             }
+        }
+
+        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || e.Node == treeView1.Nodes[0])
+                return;
+
+            treeView1.SelectedNode = e.Node;
+            switchMenuStrip.Show(treeView1, e.Location);
+        }
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            editSwitchNode();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("This will delete all data associated with the selected switch and cannot be undone.\r\n\r\nAre you sure you wish to continue?",
+                "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (dr != DialogResult.Yes)
+                return;
+
+            deleteSwitch(getSwitch(treeView1.SelectedNode.Text));
+            populateTabData();
         }
     }
 }
