@@ -79,13 +79,14 @@ namespace SwitchChecker
             if (listView1.SelectedItems == null || listView1.SelectedItems.Count < 1)
                 return;
 
-            DialogResult dr = MessageBox.Show("This will delete all data associated with the current switch.\r\n\r\nAre you sure you wish to continue?",
+            DialogResult dr = MessageBox.Show("This will delete all data associated with the selected switch(es) and cannot be undone.\r\n\r\nAre you sure you wish to continue?",
                 "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (dr != DialogResult.Yes)
                 return;
 
-            MainForm.deleteSwitch(MainForm.getSwitch(listView1.SelectedItems[0].SubItems[0].Text));
+            foreach (ListViewItem itm in listView1.SelectedItems)
+                MainForm.deleteSwitch(MainForm.getSwitch(itm.SubItems[0].Text));
             update = true;
             populateListData();
         }
