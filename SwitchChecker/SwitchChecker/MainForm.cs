@@ -195,24 +195,6 @@ namespace SwitchChecker
             }
         }
 
-        private void switchTable_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            DataGridView dgv = (DataGridView)sender;
-            SwitchInfo sw = getSwitch(dgv.Name);
-            SwitchPort prt = sw.getPort(dgv.Rows[e.RowIndex].Cells[0].Value.ToString());
-            showMacs(prt);
-        }
-
-        private void showMacs(SwitchPort prt)
-        {
-            string message = "MAC Addresses for port " + prt.Name + ":\n\n";
-            foreach (string s in prt.getMacs())
-            {
-                message += s + "\n";
-            }
-            MessageBox.Show(message);
-        }
-
         private void saveSwitchDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveSwitchData();

@@ -36,12 +36,14 @@ namespace SwitchChecker
 
         private void showMacs(SwitchPort prt)
         {
-            string message = "MAC Addresses for port " + prt.Name + ":\n\n";
+            string formTitle = "MAC Addresses for port " + prt.Name + ":";
+            string formMessage = "";
             foreach (string s in prt.getMacs())
             {
-                message += s + "\n";
+                formMessage += s + "\n";
             }
-            MessageBox.Show(message);
+            Form macForm = new MacForm(formTitle, formMessage);
+            macForm.ShowDialog(this);
         }
 
         private void dgvSearch_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
