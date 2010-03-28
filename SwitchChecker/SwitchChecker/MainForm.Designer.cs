@@ -220,7 +220,7 @@ namespace SwitchChecker
             this.treeView1.ShowRootLines = false;
             this.treeView1.Size = new System.Drawing.Size(145, 572);
             this.treeView1.TabIndex = 3;
-            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
+            this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeView1_DoubleClick);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // statusBar1

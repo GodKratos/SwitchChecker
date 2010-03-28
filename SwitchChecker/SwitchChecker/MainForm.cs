@@ -767,9 +767,9 @@ namespace SwitchChecker
             frm.ShowDialog(this);
         }
 
-        private void treeView1_DoubleClick(object sender, EventArgs e)
+        private void treeView1_DoubleClick(object sender, MouseEventArgs e)
         {
-            if (treeView1.SelectedNode == null || treeView1.SelectedNode == treeView1.Nodes[0])
+            if (e.Button != MouseButtons.Left || treeView1.SelectedNode == null || treeView1.SelectedNode == treeView1.Nodes[0])
                 return;
 
             SwitchInfo sw = getSwitch(treeView1.SelectedNode.Name);
@@ -783,6 +783,5 @@ namespace SwitchChecker
                 switchUpdated = true;
             }
         }
-
     }
 }
