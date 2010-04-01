@@ -353,8 +353,8 @@ namespace SwitchChecker
                 this.treeView1.Nodes.Add(tn);
             }
             updating = false;
-            treeView1.SelectedNode = null;
-            treeView1.SelectedNode = treeView1.Nodes[0];
+            //treeView1.SelectedNode = null;
+            //treeView1.SelectedNode = treeView1.Nodes[0];
         }
 
         private void updateSwitch(SwitchInfo sw)
