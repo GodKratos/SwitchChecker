@@ -38,6 +38,7 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.btnUpdate = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listView1
@@ -51,6 +52,7 @@
             this.colUserName});
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
+            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(12, 12);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(486, 397);
@@ -99,7 +101,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(505, 73);
+            this.btnDelete.Location = new System.Drawing.Point(505, 116);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 23);
             this.btnDelete.TabIndex = 4;
@@ -122,13 +124,24 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(505, 102);
+            this.btnClear.Location = new System.Drawing.Point(505, 145);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 5;
             this.btnClear.Text = "Clear All";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUpdate.Location = new System.Drawing.Point(505, 72);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
+            this.btnUpdate.TabIndex = 6;
+            this.btnUpdate.Text = "Update";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // EditSwitchesForm
             // 
@@ -137,6 +150,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnOK;
             this.ClientSize = new System.Drawing.Size(592, 421);
+            this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnDelete);
@@ -165,5 +179,6 @@
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnUpdate;
     }
 }

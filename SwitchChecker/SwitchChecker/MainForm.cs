@@ -24,7 +24,7 @@ namespace SwitchChecker
         public static Collection<SwitchInfo> switches = new Collection<SwitchInfo>();
         private NameValueCollection ipList = new NameValueCollection();
         private SearchForm searchForm;
-        BackgroundWorker worker = new BackgroundWorker();
+        internal BackgroundWorker worker = new BackgroundWorker();
         public bool switchUpdated = false;
         private bool updating = false;
 
@@ -535,7 +535,7 @@ namespace SwitchChecker
         /// <param name="start">True to begin wait mode, False to end it.</param>
         /// <param name="message">Message to display in status bar.</param>
         /// <param name="showProgress">True to show progress bar.</param>
-        private void waitMode(bool start, string message, bool showProgress)
+        internal void waitMode(bool start, string message, bool showProgress)
         {
             if (start)
             {
@@ -582,6 +582,8 @@ namespace SwitchChecker
             Collection<SwitchInfo> switchList = new Collection<SwitchInfo>();
             if (e.Argument == null)
                 switchList = switches;
+            else if (e.Argument is Collection<SwitchInfo>)
+                switchList = (Collection<SwitchInfo>)e.Argument;
             else
                 switchList.Add((SwitchInfo)e.Argument);
             
@@ -592,7 +594,11 @@ namespace SwitchChecker
                 if (InvokeRequired)
                     Invoke(new UpdateProgress(updateProgress), ++i * 100, false);
             }
-            e.Result = e.Argument;
+
+            if (e.Argument is SwitchInfo)
+                e.Result = e.Argument;
+            else
+                e.Result = null;
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -674,7 +680,7 @@ namespace SwitchChecker
                     }
                 }
 
-                cmd = new OleDbCommand("CREATE TABLE [Switch Data] ([Switch] string, [IP] string, [Port] string, [Description] string, [Vlan] string, [MAC Address] string)", conn);
+                cmd = new OleDbCommand("CREATE TABLE [Switch Data] ([Switch] string, [IP] string, [Port] string, [Description] string, [Vlan] string, [Speed] string, [Duplex] string, [MAC Address] string)", conn);
                 cmd.ExecuteNonQuery();
                 
                 foreach (SwitchInfo sw in switches)
@@ -684,7 +690,7 @@ namespace SwitchChecker
                         foreach (string mac in prt.getMacs())
                         {
                             string macString = mac.Substring(0, 4) + mac.Substring(5, 4) + mac.Substring(10, 4);
-                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + prt.Description + "', '" + prt.Vlan + "', '" + macString + "')", conn);
+                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + prt.Description + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', '" + mac + "')", conn);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -801,7 +807,7 @@ namespace SwitchChecker
         {
             if (e.Button != MouseButtons.Right || e.Node == treeView1.Nodes[0])
                 return;
-
+            
             treeView1.SelectedNode = e.Node;
             switchMenuStrip.Show(treeView1, e.Location);
         }

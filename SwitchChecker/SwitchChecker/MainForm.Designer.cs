@@ -52,13 +52,13 @@ namespace SwitchChecker
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.switchMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBar1 = new System.Windows.Forms.StatusBar();
             this.statusBarPanel1 = new System.Windows.Forms.StatusBarPanel();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.panel2 = new System.Windows.Forms.Panel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.switchMenuStrip.SuspendLayout();
@@ -237,19 +237,26 @@ namespace SwitchChecker
             this.updateToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.switchMenuStrip.Name = "switchMenuStrip";
-            this.switchMenuStrip.Size = new System.Drawing.Size(153, 92);
+            this.switchMenuStrip.Size = new System.Drawing.Size(113, 70);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.editToolStripMenuItem.Text = "Edit...";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            // 
+            // updateToolStripMenuItem
+            // 
+            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.updateToolStripMenuItem.Text = "Update";
+            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentSwitchToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -296,13 +303,6 @@ namespace SwitchChecker
             this.saveFileDialog1.Filter = "Excel Files|*.xls|All Files|*.*";
             this.saveFileDialog1.InitialDirectory = "C:\\Windows\\assembly\\GAC_MSIL\\System.Design\\2.0.0.0__b03f5f7f11d50a3a";
             // 
-            // updateToolStripMenuItem
-            // 
-            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.updateToolStripMenuItem.Text = "Update";
-            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentSwitchToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,7 +347,6 @@ namespace SwitchChecker
         private System.Windows.Forms.ToolStripMenuItem updateCurrentSwitchToolStripMenuItem;
         private System.Windows.Forms.StatusBar statusBar1;
         private System.Windows.Forms.StatusBarPanel statusBarPanel1;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private ToolStripMenuItem outputMACDataToolStripMenuItem;
@@ -361,6 +360,7 @@ namespace SwitchChecker
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripMenuItem updateToolStripMenuItem;
+        internal ProgressBar progressBar1;
     }
 }
 
