@@ -14,12 +14,14 @@ namespace SwitchChecker
     {
         bool update = false;
         MainForm _mainForm;
+        ListViewColumnSorter _lvwColumnSorter = new ListViewColumnSorter();
 
         public EditSwitchesForm(MainForm frm)
         {
             InitializeComponent();
             _mainForm = frm;
             populateListData();
+            listView1.ListViewItemSorter = _lvwColumnSorter;
         }
 
         private void populateListData()
@@ -139,6 +141,28 @@ namespace SwitchChecker
             if (!_mainForm.switchUpdated) _mainForm.switchUpdated = true;
             _mainForm.worker.RunWorkerAsync(switchList);
             Close();
+        }
+
+        private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            // Determine if clicked column is already the column that is being sorted.
+            if (e.Column == _lvwColumnSorter.SortColumn)
+            {
+                // Reverse the current sort direction for this column.
+                if (_lvwColumnSorter.Order == SortOrder.Ascending)
+                    _lvwColumnSorter.Order = SortOrder.Descending;
+                else
+                    _lvwColumnSorter.Order = SortOrder.Ascending;
+            }
+            else
+            {
+                // Set the column number that is to be sorted; default to ascending.
+                _lvwColumnSorter.SortColumn = e.Column;
+                _lvwColumnSorter.Order = SortOrder.Ascending;
+            }
+
+            // Perform the sort with these new sort options.
+            listView1.Sort();
         }
 
     }
