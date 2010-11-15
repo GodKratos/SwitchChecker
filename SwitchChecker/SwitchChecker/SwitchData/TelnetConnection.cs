@@ -90,7 +90,7 @@ namespace SwitchChecker
 
                 s.Send(smk, 0, smk.Length, SocketFlags.None);
             }
-            catch (Exception ers)
+            catch (Exception)
             {
                 //MessageBox.Show("ERROR IN RESPOND OPTIONS");
             }
@@ -102,7 +102,7 @@ namespace SwitchChecker
             {
                 s.Send(bytesToSend, 0, bytesToSend.Length, SocketFlags.None);
             }
-            catch (Exception ers)
+            catch (Exception)
             {
                 //MessageBox.Show("ERROR IN RESPOND OPTIONS");
             }
