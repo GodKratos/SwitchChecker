@@ -17,5 +17,11 @@ namespace SwitchChecker
             this.Text = titleText;
             this.richTextBox1.Text = messageText;
         }
+
+        private void MacForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
+        }
     }
 }

@@ -42,6 +42,7 @@
             this.richTextBox1.Size = new System.Drawing.Size(245, 264);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
+            this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MacForm_KeyDown);
             // 
             // MacForm
             // 
