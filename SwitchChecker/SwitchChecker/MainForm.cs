@@ -367,7 +367,8 @@ namespace SwitchChecker
                 Exception ex = null;
                 if ((ex = tc.Connect()) != null)
                 {
-                    MessageBox.Show("Failed to connect to switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (InvokeRequired)
+                        Invoke(new ShowWarning(showWarning), "Failed to connect to switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error");
                     return;
                 }
                 sw.Ports = new Collection<SwitchPort>();
@@ -625,6 +626,12 @@ namespace SwitchChecker
                 treeView1.SelectedNode = treeView1.Nodes[sw.Name];
             }
             waitMode(false);
+        }
+
+        private delegate void ShowWarning(string title, string caption);
+        private void showWarning(string text, string caption)
+        {
+            MessageBox.Show(this, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private delegate void UpdateProgress(int value, bool increment);
