@@ -20,6 +20,7 @@ namespace SwitchChecker
         private void SetValues()
         {
             txtTimeout.Text = Properties.Settings.Default.Timeout.ToString();
+            chkExcludeTrunks.Checked = Properties.Settings.Default.ExcludeTrunksSearch;
             txtUserName.Text = Properties.Settings.Default.DefaultUserName;
             txtPassword.Text = Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword);
         }
@@ -34,6 +35,7 @@ namespace SwitchChecker
             }
 
             Properties.Settings.Default.Timeout = Math.Max(timeout, 1);
+            Properties.Settings.Default.ExcludeTrunksSearch = chkExcludeTrunks.Checked;
             Properties.Settings.Default.DefaultUserName = txtUserName.Text;
             Properties.Settings.Default.DefaultEncryptedPassword = Functions.EncryptPassword(txtPassword.Text);
             Properties.Settings.Default.Save();
@@ -44,11 +46,6 @@ namespace SwitchChecker
         private void btnOK_Click(object sender, EventArgs e)
         {
             StoreValues();
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

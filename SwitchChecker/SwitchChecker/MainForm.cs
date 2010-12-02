@@ -144,6 +144,9 @@ namespace SwitchChecker
             {
                 foreach (SwitchPort prt in sw.Ports)
                 {
+                    if (Properties.Settings.Default.ExcludeTrunksSearch && prt.isTrunk())
+                        continue;
+
                     if (macs != null)
                     {
                         foreach (string str in macs)
