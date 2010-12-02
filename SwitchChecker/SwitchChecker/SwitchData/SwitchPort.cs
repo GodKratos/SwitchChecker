@@ -38,6 +38,11 @@ namespace SwitchChecker
             }
         }
 
+        public bool isTrunk()
+        {
+            return (Vlan.Equals("trunk"));
+        }
+
         public void addMac(string mac)
         {
             _macAddresses.Add(mac);
