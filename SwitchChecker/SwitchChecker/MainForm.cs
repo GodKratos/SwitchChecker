@@ -697,10 +697,19 @@ namespace SwitchChecker
                 {
                     foreach (SwitchPort prt in sw.Ports)
                     {
-                        foreach (string mac in prt.getMacs())
+                        string desc = prt.Description.Replace("'", "");
+                        if (prt.getMacs().Count > 0)
                         {
-                            string macString = mac.Substring(0, 4) + mac.Substring(5, 4) + mac.Substring(10, 4);
-                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + prt.Description + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', '" + mac + "')", conn);
+                            foreach (string mac in prt.getMacs())
+                            {
+                                string macString = mac.Substring(0, 4) + mac.Substring(5, 4) + mac.Substring(10, 4);
+                                cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', '" + mac + "')", conn);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', 'None')", conn);
                             cmd.ExecuteNonQuery();
                         }
                     }
