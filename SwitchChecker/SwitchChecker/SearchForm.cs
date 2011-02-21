@@ -42,7 +42,7 @@ namespace SwitchChecker
             {
                 formMessage += s + "\n";
             }
-            Form macForm = new MacForm(formTitle, formMessage);
+            Form macForm = new TextForm(formTitle, formMessage);
             macForm.ShowDialog(this);
         }
 

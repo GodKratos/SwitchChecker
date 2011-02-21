@@ -10,6 +10,7 @@ namespace SwitchChecker
     {
         private string _name;
         private string _description;
+        public string Status { get; set; }
         public string Vlan { get; set; }
         public string Speed { get; set; }
         public string Duplex { get; set; }

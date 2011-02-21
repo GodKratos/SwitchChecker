@@ -31,7 +31,7 @@ namespace SwitchChecker
             {
                 dgvSwitch.Rows.Clear();
                 foreach (SwitchPort prt in sw.Ports)
-                    dgvSwitch.Rows.Add(new string[] { prt.Name, prt.Description, prt.Vlan, prt.Speed, prt.Duplex });
+                    dgvSwitch.Rows.Add(new string[] { prt.Name, prt.Description, prt.Status, prt.Vlan, prt.Speed, prt.Duplex });
             }
         }
 
@@ -70,7 +70,7 @@ namespace SwitchChecker
             {
                 formMessage += s + "\n";
             }
-            Form macForm = new MacForm(formTitle, formMessage);
+            Form macForm = new TextForm(formTitle, formMessage);
             macForm.ShowDialog(this);
         }
     }

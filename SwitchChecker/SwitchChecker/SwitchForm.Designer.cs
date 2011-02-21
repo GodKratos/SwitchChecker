@@ -30,13 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             this.dgvSwitch = new System.Windows.Forms.DataGridView();
+            this.rightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mACAddressesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.columnInterface = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.columnStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnVlan = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnSpeed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnDuplex = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.rightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.mACAddressesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSwitch)).BeginInit();
             this.rightClickMenu.SuspendLayout();
             this.SuspendLayout();
@@ -51,6 +52,7 @@
             this.dgvSwitch.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnInterface,
             this.columnDescription,
+            this.columnStatus,
             this.columnVlan,
             this.columnSpeed,
             this.columnDuplex});
@@ -66,6 +68,20 @@
             this.dgvSwitch.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvSwitch_CellMouseClick);
             this.dgvSwitch.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSwitch_CellDoubleClick);
             // 
+            // rightClickMenu
+            // 
+            this.rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mACAddressesToolStripMenuItem});
+            this.rightClickMenu.Name = "rightClickMenu1";
+            this.rightClickMenu.Size = new System.Drawing.Size(158, 26);
+            // 
+            // mACAddressesToolStripMenuItem
+            // 
+            this.mACAddressesToolStripMenuItem.Name = "mACAddressesToolStripMenuItem";
+            this.mACAddressesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.mACAddressesToolStripMenuItem.Text = "MAC Addresses";
+            this.mACAddressesToolStripMenuItem.Click += new System.EventHandler(this.mACAddressesToolStripMenuItem_Click);
+            // 
             // columnInterface
             // 
             this.columnInterface.FillWeight = 5F;
@@ -79,6 +95,13 @@
             this.columnDescription.HeaderText = "Description";
             this.columnDescription.Name = "columnDescription";
             this.columnDescription.ReadOnly = true;
+            // 
+            // columnStatus
+            // 
+            this.columnStatus.FillWeight = 5F;
+            this.columnStatus.HeaderText = "Status";
+            this.columnStatus.Name = "columnStatus";
+            this.columnStatus.ReadOnly = true;
             // 
             // columnVlan
             // 
@@ -101,20 +124,6 @@
             this.columnDuplex.Name = "columnDuplex";
             this.columnDuplex.ReadOnly = true;
             // 
-            // rightClickMenu
-            // 
-            this.rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mACAddressesToolStripMenuItem});
-            this.rightClickMenu.Name = "rightClickMenu1";
-            this.rightClickMenu.Size = new System.Drawing.Size(158, 26);
-            // 
-            // mACAddressesToolStripMenuItem
-            // 
-            this.mACAddressesToolStripMenuItem.Name = "mACAddressesToolStripMenuItem";
-            this.mACAddressesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.mACAddressesToolStripMenuItem.Text = "MAC Addresses";
-            this.mACAddressesToolStripMenuItem.Click += new System.EventHandler(this.mACAddressesToolStripMenuItem_Click);
-            // 
             // SwitchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -134,13 +143,14 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnInterface;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnDescription;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnVlan;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnSpeed;
-        private System.Windows.Forms.DataGridViewTextBoxColumn columnDuplex;
         private System.Windows.Forms.ContextMenuStrip rightClickMenu;
         private System.Windows.Forms.ToolStripMenuItem mACAddressesToolStripMenuItem;
         public System.Windows.Forms.DataGridView dgvSwitch;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnInterface;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnVlan;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnSpeed;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnDuplex;
     }
 }
