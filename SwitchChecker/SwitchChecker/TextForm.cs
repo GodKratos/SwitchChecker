@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace SwitchChecker
 {
-    public partial class MacForm : Form
+    public partial class TextForm : Form
     {
-        public MacForm(string titleText, string messageText)
+        public TextForm(string titleText, string messageText)
         {
             InitializeComponent();
             this.Text = titleText;

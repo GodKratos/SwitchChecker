@@ -1,6 +1,6 @@
 ﻿namespace SwitchChecker
 {
-    partial class MacForm
+    partial class TextForm
     {
         /// <summary>
         /// Required designer variable.
@@ -44,7 +44,7 @@
             this.richTextBox1.Text = "";
             this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MacForm_KeyDown);
             // 
-            // MacForm
+            // TextForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -52,11 +52,11 @@
             this.Controls.Add(this.richTextBox1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "MacForm";
+            this.Name = "TextForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "MAC Addresses:";
+            this.Text = "Title Text";
             this.ResumeLayout(false);
 
         }

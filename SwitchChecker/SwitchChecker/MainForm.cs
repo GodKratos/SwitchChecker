@@ -23,6 +23,7 @@ namespace SwitchChecker
         private static string DATA_PATH = "SwitchData\\";
         public static Collection<SwitchInfo> switches = new Collection<SwitchInfo>();
         private NameValueCollection ipList = new NameValueCollection();
+        private StringCollection failedSwitches = new StringCollection();
         private SearchForm searchForm;
         internal BackgroundWorker worker = new BackgroundWorker();
         public bool switchUpdated = false;
@@ -245,6 +246,7 @@ namespace SwitchChecker
                     XmlElement port = xd.CreateElement("port");
                     port.SetAttribute("Name", prt.Name);
                     port.SetAttribute("Description", prt.Description);
+                    port.SetAttribute("Status", prt.Status);
                     port.SetAttribute("Vlan", prt.Vlan);
                     port.SetAttribute("Speed", prt.Speed);
                     port.SetAttribute("Duplex", prt.Duplex);
@@ -321,6 +323,7 @@ namespace SwitchChecker
                 for (XmlNode port = swtch.FirstChild; port != null; port = port.NextSibling)
                 {
                     SwitchPort prt = new SwitchPort(port.Attributes["Name"].Value, port.Attributes["Description"].Value);
+                    prt.Status = port.Attributes["Status"].Value;
                     prt.Vlan = port.Attributes["Vlan"].Value;
                     prt.Speed = port.Attributes["Speed"].Value;
                     prt.Duplex = port.Attributes["Duplex"].Value;
@@ -370,8 +373,16 @@ namespace SwitchChecker
                 Exception ex = null;
                 if ((ex = tc.Connect()) != null)
                 {
-                    if (InvokeRequired)
-                        Invoke(new ShowWarning(showWarning), "Failed to connect to switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error");
+                    if (failedSwitches != null)
+                    {
+                        failedSwitches.Add(sw.Name);
+                    }
+                    else
+                    {
+                        if (InvokeRequired)
+                            Invoke(new ShowWarning(showWarning), "Failed to connect to switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error", false);
+                    }
+
                     return;
                 }
                 sw.Ports = new Collection<SwitchPort>();
@@ -417,6 +428,7 @@ namespace SwitchChecker
                 {
                     char[] lineChars = lines[i].ToCharArray();
                     string strInt = "";
+                    string strStatus = "";
                     string strVlan = "";
                     string strDuplex = "";
                     string strSpeed = "";
@@ -425,6 +437,8 @@ namespace SwitchChecker
                     {
                         if (j < 10)
                             strInt += lineChars[j];
+                        if (j >= 30 && j < 43)
+                            strStatus += lineChars[j];
                         if (j >= 43 && j < 54)
                             strVlan += lineChars[j];
                         if (j >= 54 && j < 61)
@@ -435,6 +449,7 @@ namespace SwitchChecker
                             strType += lineChars[j];
                     }
                     strInt = strInt.Trim();
+                    strStatus = strStatus.Trim();
                     strVlan = strVlan.Trim();
                     strDuplex = strDuplex.Trim();
                     strSpeed = strSpeed.Trim();
@@ -444,6 +459,7 @@ namespace SwitchChecker
                         SwitchPort prt = sw.getPort(strInt);
                         if (prt != null)
                         {
+                            prt.Status = strStatus;
                             prt.Vlan = strVlan;
                             prt.Duplex = strDuplex;
                             prt.Speed = strSpeed;
@@ -584,12 +600,16 @@ namespace SwitchChecker
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             Collection<SwitchInfo> switchList = new Collection<SwitchInfo>();
+            failedSwitches = new StringCollection();
             if (e.Argument == null)
                 switchList = switches;
             else if (e.Argument is Collection<SwitchInfo>)
                 switchList = (Collection<SwitchInfo>)e.Argument;
             else
+            {
+                failedSwitches = null;
                 switchList.Add((SwitchInfo)e.Argument);
+            }
             
             int i = 0;
             foreach (SwitchInfo sw in switchList)
@@ -597,6 +617,16 @@ namespace SwitchChecker
                 updateSwitch(sw);
                 if (InvokeRequired)
                     Invoke(new UpdateProgress(updateProgress), ++i * 100, false);
+            }
+
+            if (failedSwitches != null && failedSwitches.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Failed to connect to the following switches:");
+                foreach (string sw in failedSwitches)
+                    sb.AppendLine(sw);
+                if (InvokeRequired)
+                    Invoke(new ShowWarning(showWarning), sb.ToString(), "Error", true);
             }
 
             if (e.Argument is SwitchInfo)
@@ -631,10 +661,16 @@ namespace SwitchChecker
             waitMode(false);
         }
 
-        private delegate void ShowWarning(string title, string caption);
-        private void showWarning(string text, string caption)
+        private delegate void ShowWarning(string title, string caption, bool editableText);
+        private void showWarning(string text, string caption, bool editableText)
         {
-            MessageBox.Show(this, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (editableText)
+            {
+                Form warningForm = new TextForm(caption, text);
+                warningForm.ShowDialog(this);
+            }
+            else
+                MessageBox.Show(this, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private delegate void UpdateProgress(int value, bool increment);
@@ -670,7 +706,19 @@ namespace SwitchChecker
             waitMode(true, "Saving data...");
 
             if (File.Exists(saveFileDialog1.FileName))
-                File.Delete(saveFileDialog1.FileName);
+            {
+                try
+                {
+                    File.Delete(saveFileDialog1.FileName);
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                    waitMode(false);
+                    return;
+                }
+
+            }
 
             using (OleDbConnection conn = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + saveFileDialog1.FileName + ";Extended Properties='Excel 8.0;HDR=Yes'"))
             {
@@ -690,7 +738,7 @@ namespace SwitchChecker
                     }
                 }
 
-                cmd = new OleDbCommand("CREATE TABLE [Switch Data] ([Switch] string, [IP] string, [Port] string, [Description] string, [Vlan] string, [Speed] string, [Duplex] string, [MAC Address] string)", conn);
+                cmd = new OleDbCommand("CREATE TABLE [Switch Data] ([Switch] string, [IP] string, [Port] string, [Description] string, [Status] string, [Vlan] string, [Speed] string, [Duplex] string, [MAC Address] string)", conn);
                 cmd.ExecuteNonQuery();
                 
                 foreach (SwitchInfo sw in switches)
@@ -703,13 +751,13 @@ namespace SwitchChecker
                             foreach (string mac in prt.getMacs())
                             {
                                 string macString = mac.Substring(0, 4) + mac.Substring(5, 4) + mac.Substring(10, 4);
-                                cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', '" + mac + "')", conn);
+                                cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Status], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Status + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', '" + mac + "')", conn);
                                 cmd.ExecuteNonQuery();
                             }
                         }
                         else
                         {
-                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', 'None')", conn);
+                            cmd = new OleDbCommand("INSERT INTO [Switch Data] ([Switch], [IP], [Port], [Description], [Status], [Vlan], [Speed], [Duplex], [MAC Address]) values ('" + sw.Name + "', '" + sw.Address + "', '" + prt.Name + "', '" + desc + "', '" + prt.Status + "', '" + prt.Vlan + "', '" + prt.Speed + "', '" + prt.Duplex + "', 'None')", conn);
                             cmd.ExecuteNonQuery();
                         }
                     }
