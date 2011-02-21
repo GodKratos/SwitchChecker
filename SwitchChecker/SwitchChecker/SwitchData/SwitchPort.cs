@@ -41,7 +41,10 @@ namespace SwitchChecker
 
         public bool isTrunk()
         {
-            return (Vlan.Equals("trunk"));
+            if (Vlan != null)
+                return (Vlan.Equals("trunk"));
+            else
+                return false;
         }
 
         public void addMac(string mac)
