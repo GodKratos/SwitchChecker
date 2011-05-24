@@ -509,20 +509,16 @@ namespace SwitchChecker
                 {
                     reply = tc.SendCommand("show mac address interface " + prt.Name);
                     lines = reply.Split("\r".ToCharArray());
-                    if (lines[1].Trim().StartsWith("Unicast Entries"))
-                    {   // Cisco 4500 Switch
-                        for (int i = 4; i < lines.Length - 3; i++)
-                        {
-                            if (lines[i].Length > 21)
-                                prt.addMac(lines[i].Substring(9, 14));
-                        }
-                    }
-                    else if (lines.Length > 6)
+                    foreach (string line in lines)
                     {
-                        for (int i = 6; i < lines.Length - 2; i++)
+                        if (line.Length > 21)
                         {
-                            if (lines[i].Length > 21)
-                                prt.addMac(lines[i].Substring(9, 14));
+                            string lineMac = line.Substring(9, 14);
+                            if (Regex.IsMatch(lineMac, @"([0-9a-f]{4}\.){2}[0-9a-f]{4}"))
+                            {
+                                if (!prt.getMacs().Contains(lineMac))
+                                    prt.addMac(lineMac);
+                            }
                         }
                     }
                     if (InvokeRequired)
