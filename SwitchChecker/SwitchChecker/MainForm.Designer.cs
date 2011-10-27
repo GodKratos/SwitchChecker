@@ -31,7 +31,7 @@ namespace SwitchChecker
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Search Results");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Search Results");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +59,7 @@ namespace SwitchChecker
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.panel2 = new System.Windows.Forms.Panel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.switchMenuStrip.SuspendLayout();
@@ -218,45 +219,46 @@ namespace SwitchChecker
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "Search Results";
-            treeNode1.Text = "Search Results";
+            treeNode2.Name = "Search Results";
+            treeNode2.Text = "Search Results";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            treeNode2});
             this.treeView1.ShowNodeToolTips = true;
             this.treeView1.ShowRootLines = false;
             this.treeView1.Size = new System.Drawing.Size(145, 572);
             this.treeView1.TabIndex = 3;
-            this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeView1_DoubleClick);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeView1_DoubleClick);
             // 
             // switchMenuStrip
             // 
             this.switchMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editToolStripMenuItem,
             this.updateToolStripMenuItem,
+            this.connectToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.switchMenuStrip.Name = "switchMenuStrip";
-            this.switchMenuStrip.Size = new System.Drawing.Size(113, 70);
+            this.switchMenuStrip.Size = new System.Drawing.Size(153, 114);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.editToolStripMenuItem.Text = "Edit...";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
             // 
             // updateToolStripMenuItem
             // 
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.updateToolStripMenuItem.Text = "Update";
             this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentSwitchToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -302,6 +304,13 @@ namespace SwitchChecker
             this.saveFileDialog1.FileName = "MacList.xls";
             this.saveFileDialog1.Filter = "Excel Files|*.xls|All Files|*.*";
             this.saveFileDialog1.InitialDirectory = "C:\\Windows\\assembly\\GAC_MSIL\\System.Design\\2.0.0.0__b03f5f7f11d50a3a";
+            // 
+            // connectToolStripMenuItem
+            // 
+            this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
+            this.connectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.connectToolStripMenuItem.Text = "Connect";
+            this.connectToolStripMenuItem.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -361,6 +370,7 @@ namespace SwitchChecker
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripMenuItem updateToolStripMenuItem;
         internal ProgressBar progressBar1;
+        private ToolStripMenuItem connectToolStripMenuItem;
     }
 }
 

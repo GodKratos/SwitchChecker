@@ -15,6 +15,8 @@ using System.Collections.Specialized;
 using System.Xml;
 using System.Threading;
 using System.Data.OleDb;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace SwitchChecker
 {
@@ -886,6 +888,25 @@ namespace SwitchChecker
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
             editSwitchNode();
+        }
+
+        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchInfo sw = getSwitch(treeView1.SelectedNode.Name);
+
+            Process telnetProcess = new Process();
+            string cmdPath = System.IO.Path.Combine(Environment.GetEnvironmentVariable("windir"), @"system32\telnet.exe");
+            if (!File.Exists(cmdPath))
+                cmdPath = System.IO.Path.Combine(Environment.GetEnvironmentVariable("windir"), @"sysnative\telnet.exe");
+            if (!File.Exists(cmdPath))
+            {
+                MessageBox.Show("Unable to find Telnet exectuable.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+            
+            telnetProcess.StartInfo.FileName = cmdPath;
+            telnetProcess.StartInfo.Arguments = sw.Address;
+            telnetProcess.Start();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
