@@ -443,6 +443,21 @@ namespace SwitchChecker
                     }
                 }
 
+                if (sw.Ports.Count < 1)
+                {
+                    if (failedSwitches != null)
+                    {
+                        failedSwitches.Add(sw.Name);
+                    }
+                    else
+                    {
+                        if (InvokeRequired)
+                            Invoke(new ShowWarning(showWarning), "Failed to collect data for switch " + sw.Name, "Error", false);
+                    }
+
+                    return;
+                }
+
                 reply = tc.SendCommand("show interface status");
                 lines = reply.Split("\r".ToCharArray());
                 for (int i = 3; i < lines.Length - 1; i++)
