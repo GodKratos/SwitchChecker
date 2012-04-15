@@ -387,7 +387,6 @@ namespace SwitchChecker
 
                     return;
                 }
-                sw.Ports = new Collection<SwitchPort>();
 
                 //If no username specified use defaults for username and password
                 string username = (string.IsNullOrEmpty(sw.UserName) ? Properties.Settings.Default.DefaultUserName : sw.UserName);
@@ -401,7 +400,27 @@ namespace SwitchChecker
                 tc.WaitAndSend("Username:", username);
                 tc.WaitAndSend("Password:", password);
 
-                tc.WaitFor(tc.PROMPT);
+                bool loggedIn = tc.WaitFor(tc.PROMPT);
+                
+                if (!loggedIn)
+                {
+                    if (failedSwitches != null)
+                    {
+                        failedSwitches.Add(sw.Name);
+                    }
+                    else
+                    {
+                        if (InvokeRequired)
+                            Invoke(new ShowWarning(showWarning), "Failed to log on to switch " + sw.Name + ".\r\nIncorrect username or password.", "Error", false);
+                    }
+
+                    return;
+                }
+
+                if (InvokeRequired)
+                    Invoke(new UpdateStatus(updateStatus), "Gathering data for " + sw.Name + "...");
+
+                sw.Ports = new Collection<SwitchPort>();
                 string reply = tc.SendCommand("show interface description");
                 string[] lines = reply.Split("\r".ToCharArray());
                 for (int i = 2; i < lines.Length - 1; i++)
@@ -505,8 +524,6 @@ namespace SwitchChecker
                     }
                 }
                 //MessageBox.Show(reply);
-                if (InvokeRequired)
-                    Invoke(new UpdateStatus(updateStatus), "Gathering data for " + sw.Name + "...");
                 foreach (SwitchPort prt in sw.Ports)
                 {
                     reply = tc.SendCommand("show mac address interface " + prt.Name);
@@ -684,7 +701,7 @@ namespace SwitchChecker
         {
             if (increment)
                 value += progressBar1.Value;
-            progressBar1.Value = value > progressBar1.Maximum ? progressBar1.Maximum : value;
+            progressBar1.Value = Math.Min(value, progressBar1.Maximum);
         }
 
         private delegate void UpdateStatus(string message);
