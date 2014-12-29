@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="Functions.cs" />
     <Compile Include="ListViewColumnSorter.cs" />
+    <Compile Include="ReadWriteCsv.cs" />
     <Compile Include="TextForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -21,9 +21,9 @@ namespace SwitchChecker
         /// <param name="address">IP Address of the switch</param>
         public SwitchInfo(string switchName, string address, string userName, string encryptedPassword)
         {
-            _switchName = switchName;
-            _hostAddress = address;
-            _userName = userName;
+            _switchName = switchName.Trim();
+            _hostAddress = address.Trim();
+            _userName = userName.Trim();
             _encryptedPassword = encryptedPassword;
         }
 

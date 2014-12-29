@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using System.IO;
+using ReadWriteCsv;
 
 namespace SwitchChecker
 {
@@ -74,6 +76,86 @@ namespace SwitchChecker
             {
                 update = true;
                 populateListData();
+            }
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() != DialogResult.OK)
+                return;
+            try
+            {
+                using (CsvFileReader reader = new CsvFileReader(openFileDialog1.OpenFile()))
+                {
+                    CsvRow row = new CsvRow();
+                    reader.ReadRow(row);
+
+                    int nameIndex = row.FindIndex(delegate(string str) { return str == "Name"; });
+                    int addressIndex = row.FindIndex(delegate(string str) { return str == "Network Address"; });
+                    int userIndex = row.FindIndex(delegate(string str) { return str == "Username"; });
+                    int passIndex = row.FindIndex(delegate(string str) { return str == "Password"; });
+
+                    if (nameIndex == -1 || addressIndex == -1)
+                    {
+                        MessageBox.Show("Please ensure your CSV file contains the following column names in the header row:\r\n\r\nName\r\nNetwork Address\r\nUsername (Optional)\r\nPassword (Optional)",
+                            "Invalid Header Row", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    DialogResult dr = MessageBox.Show("Any existing switches with the same name or address in the imported data will be removed and is irreversible.\r\n\r\nAre you sure you wish to continue?",
+                        "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                    if (dr != DialogResult.Yes)
+                        return;
+
+                    bool added = false;
+
+                    while (reader.ReadRow(row))
+                    {
+                        string nameVal = "";
+                        string addressVal = "";
+                        string userVal = "";
+                        string passVal = "";
+
+                        nameVal = row.ElementAt(nameIndex).Trim();
+                        addressVal = row.ElementAt(addressIndex).Trim();
+                        if (userIndex > -1) userVal = row.ElementAt(userIndex).Trim();
+                        if (passIndex > -1) passVal = row.ElementAt(passIndex);
+
+                        if (string.IsNullOrEmpty(nameVal) || string.IsNullOrEmpty(addressVal)) continue;
+
+                        // delete any existing switches
+                        List<SwitchInfo> dellist = new List<SwitchInfo>();
+                        foreach (SwitchInfo sw in MainForm.switches)
+                        {
+                            if (sw.Name.ToLower().Trim().Equals(nameVal.ToLower()))
+                            {
+                                dellist.Add(sw);
+                            }
+
+                            if (sw.Address.ToLower().Trim().Equals(addressVal.ToLower()))
+                            {
+                                dellist.Add(sw);
+                            }
+                        }
+                        foreach (SwitchInfo sw in dellist) MainForm.deleteSwitch(sw);
+
+                        // Add new switch
+                        SwitchInfo swtch = new SwitchInfo(nameVal, addressVal, userVal, Functions.EncryptPassword(passVal));
+                        MainForm.switches.Add(swtch);
+                        added = true;
+                    }
+
+                    if (added)
+                    {
+                        update = true;
+                        populateListData();
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
             }
         }
 

@@ -60,7 +60,7 @@ namespace SwitchChecker
         {
             foreach (SwitchInfo s in switches)
             {
-                if (s.Name == name)
+                if (s.Name.ToLower() == name.ToLower())
                     return s;
             }
             return null;
