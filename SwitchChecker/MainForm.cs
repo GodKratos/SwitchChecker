@@ -363,7 +363,7 @@ namespace SwitchChecker
         private string[] getResultData(string inputData, string firstMatchPattern)
         {
             List<string> lines = inputData.Split("\r".ToCharArray()).ToList();
-            var indx = lines.FindIndex(r => r.Contains(firstMatchPattern));
+            var indx = lines.FindIndex(r => r.ToLower().Contains(firstMatchPattern.ToLower()));
 
             if (indx == 0)
                 return lines.ToArray();
@@ -558,8 +558,8 @@ namespace SwitchChecker
                         {
                             foreach (string line in lineList)
                             {
-                                var portname = Regex.Match(line, @"[a-zA-Z]+[0-9](/[0-9]+){1,}");
-                                if (portname.Success && prt.Name.Equals(Regex.Replace(portname.Value, @"([a-zA-Z][a-zA-Z])[a-zA-Z]*([0-9].*)", "$1$2")))
+                                var portname = Regex.Match(line.TrimEnd(), @" [^ ]+$");
+                                if (portname.Success && prt.Name.Equals(Regex.Replace(portname.Value, @" ([a-zA-Z][a-zA-Z])[a-zA-Z]*([0-9].*)", "$1$2"), StringComparison.OrdinalIgnoreCase))
                                 {
                                     var macAdd = Regex.Match(line, @"([0-9a-f]{4}\.){2}[0-9a-f]{4}");
                                     if (macAdd.Success && !prt.getMacs().Contains(macAdd.Value))
