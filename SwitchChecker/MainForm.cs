@@ -1,22 +1,17 @@
-﻿using System;
+﻿using Renci.SshNet;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Data.OleDb;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using System.Net;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
-using System.Collections.Specialized;
+using System.Windows.Forms;
 using System.Xml;
-using System.Threading;
-using System.Data.OleDb;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace SwitchChecker
 {
@@ -365,204 +360,234 @@ namespace SwitchChecker
             //treeView1.SelectedNode = treeView1.Nodes[0];
         }
 
+        private string[] getResultData(string inputData, string firstMatchPattern)
+        {
+            List<string> lines = inputData.Split("\r".ToCharArray()).ToList();
+            var indx = lines.FindIndex(r => r.Contains(firstMatchPattern));
+
+            if (indx == 0)
+                return lines.ToArray();
+            if (indx > -1)
+            {
+                lines.RemoveRange(0, indx);
+                return lines.ToArray();
+            }
+            else
+                return null;
+        }
+
         private void updateSwitch(SwitchInfo sw)
         {
-            TelnetConnection tc = new TelnetConnection(sw.Address, 23);
-            try
+            //If no username specified use defaults for username and password
+            string username = (string.IsNullOrEmpty(sw.UserName) ? Properties.Settings.Default.DefaultUserName : sw.UserName);
+            string password = (string.IsNullOrEmpty(sw.UserName) ? Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword) : sw.Password);
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 if (InvokeRequired)
-                    Invoke(new UpdateStatus(updateStatus), "Connecting to " + sw.Name + "...");
-                Exception ex = null;
-                if ((ex = tc.Connect()) != null)
+                    Invoke(new UpdateStatus(updateStatus), "Credentials invalid for " + sw.Name + ".");
+                if (failedSwitches != null)
                 {
-                    if (failedSwitches != null)
-                    {
-                        failedSwitches.Add(sw.Name);
-                    }
-                    else
-                    {
-                        if (InvokeRequired)
-                            Invoke(new ShowWarning(showWarning), "Failed to connect to switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error", false);
-                    }
-
-                    return;
+                    failedSwitches.Add(sw.Name);
                 }
-
-                //If no username specified use defaults for username and password
-                string username = (string.IsNullOrEmpty(sw.UserName) ? Properties.Settings.Default.DefaultUserName : sw.UserName);
-                string password = (string.IsNullOrEmpty(sw.UserName) ? Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword) : sw.Password);
-
-                tc.WaitAndSend(new byte[] { 255, 251, 1 }, new byte[] { 255, 253, 1 });
-                tc.WaitAndSend(new byte[] { 255, 251, 3 }, new byte[] { 255, 253, 3, 255, 251, 24, 255, 251, 31 });
-                tc.WaitAndSend(new byte[] { 255, 253, 31 }, new byte[] { 255, 250, 31, 0, 200, 0, 0, 255, 240 });
-                //tc.WaitAndSend(new byte[] { 255, 253, 24 }, new byte[] { 255, 250, 24, 0, 65, 78, 83, 73, 255, 240 }); //ANSI terminal
-                //tc.WaitAndSend(new byte[] { 255, 253, 24 }, new byte[] { 255, 250, 24, 0, 86, 84, 50, 50, 48, 255, 240 }); // VT220 terminal
-                tc.WaitAndSend("Username:", username);
-                tc.WaitAndSend("Password:", password);
-
-                bool loggedIn = tc.WaitFor(tc.PROMPT);
-                
-                if (!loggedIn)
+                else
                 {
-                    if (failedSwitches != null)
-                    {
-                        failedSwitches.Add(sw.Name);
-                    }
-                    else
-                    {
-                        if (InvokeRequired)
-                            Invoke(new ShowWarning(showWarning), "Failed to log on to switch " + sw.Name + ".\r\nIncorrect username or password.", "Error", false);
-                    }
-
-                    return;
+                    if (InvokeRequired)
+                        Invoke(new ShowWarning(showWarning), "Credentials are not set correctly to access " + sw.Name + ".", "Error", false);
                 }
+                return;
+            }
 
-                if (InvokeRequired)
-                    Invoke(new UpdateStatus(updateStatus), "Gathering data for " + sw.Name + "...");
-
-                sw.Ports = new Collection<SwitchPort>();
-                string reply = tc.SendCommand("show interface description");
-                string[] lines = reply.Split("\r".ToCharArray());
-                for (int i = 2; i < lines.Length - 1; i++)
+            if (InvokeRequired)
+                Invoke(new UpdateStatus(updateStatus), "Connecting to " + sw.Name + "...");
+            using (var sshclient = new SshClient(sw.Address, username, password))
+            {
+                try
                 {
-                    char[] lineChars = lines[i].ToCharArray();
-                    string strInt = "";
-                    string strDesc = "";
-                    for (int j = 0; j < lineChars.Length; j++)
-                    {
-                        if (j < 31)
-                            strInt += lineChars[j];
-                        if (j > 54)
-                            strDesc += lineChars[j];
-                    }
-                    strInt = strInt.Trim();
-                    strDesc = strDesc.Trim();
-                    if (strInt.Length > 0)
-                    {
-                        sw.addPort(new SwitchPort(strInt, strDesc));
-                    }
-                }
+                    if (InvokeRequired)
+                        Invoke(new UpdateStatus(updateStatus), "Gathering data for " + sw.Name + "...");
 
-                if (sw.Ports.Count < 1)
-                {
-                    if (failedSwitches != null)
+                    sw.Ports = new Collection<SwitchPort>();
+                    sshclient.Connect();
+                    var reply = sshclient.RunCommand("show interface description").Result;
+                    sshclient.Disconnect();
+                    string[] lines = getResultData(reply, "Interface");
+                    if (lines != null && lines.Length > 1)
                     {
-                        failedSwitches.Add(sw.Name);
-                    }
-                    else
-                    {
-                        if (InvokeRequired)
-                            Invoke(new ShowWarning(showWarning), "Failed to collect data for switch " + sw.Name, "Error", false);
-                    }
-
-                    return;
-                }
-
-                reply = tc.SendCommand("show interface status");
-                lines = reply.Split("\r".ToCharArray());
-                for (int i = 3; i < lines.Length - 1; i++)
-                {
-                    char[] lineChars = lines[i].ToCharArray();
-                    string strInt = "";
-                    string strStatus = "";
-                    string strVlan = "";
-                    string strDuplex = "";
-                    string strSpeed = "";
-                    string strType = "";
-                    for (int j = 0; j < lineChars.Length; j++)
-                    {
-                        if (j < 10)
-                            strInt += lineChars[j];
-                        if (j >= 30 && j < 43)
-                            strStatus += lineChars[j];
-                        if (j >= 43 && j < 54)
-                            strVlan += lineChars[j];
-                        if (j >= 54 && j < 61)
-                            strDuplex += lineChars[j];
-                        if (j >= 61 && j < 68)
-                            strSpeed += lineChars[j];
-                        if (j >= 68)
-                            strType += lineChars[j];
-                    }
-                    strInt = strInt.Trim();
-                    strStatus = strStatus.Trim();
-                    strVlan = strVlan.Trim();
-                    strDuplex = strDuplex.Trim();
-                    strSpeed = strSpeed.Trim();
-                    strType = strType.Trim();
-                    if (strInt.Length > 0)
-                    {
-                        SwitchPort prt = sw.getPort(strInt);
-                        if (prt != null)
+                        for (int i = 1; i < lines.Length; i++)
                         {
-                            prt.Status = strStatus;
-                            prt.Vlan = strVlan;
-                            prt.Duplex = strDuplex;
-                            prt.Speed = strSpeed;
-                            prt.Type = strType;
+                            char[] lineChars = lines[i].ToCharArray();
+                            string strInt = "";
+                            string strDesc = "";
+                            for (int j = 0; j < lineChars.Length; j++)
+                            {
+                                if (j < 31)
+                                    strInt += lineChars[j];
+                                if (j > 54)
+                                    strDesc += lineChars[j];
+                            }
+                            strInt = strInt.Trim();
+                            strDesc = strDesc.Trim();
+                            if (strInt.Length > 0)
+                            {
+                                sw.addPort(new SwitchPort(strInt, strDesc));
+                            }
                         }
                     }
-                }
 
-                reply = tc.SendCommand("show ip arp");
-                lines = reply.Split("\r".ToCharArray());
-                for (int i = 2; i < lines.Length - 1; i++)
-                {
-                    char[] lineChars = lines[i].ToCharArray();
-                    string strIp = "";
-                    string strMac = "";
-                    for (int j = 0; j < lineChars.Length; j++)
+                    if (sw.Ports.Count < 1)
                     {
-                        if (j >= 10 && j < 27)
-                            strIp += lineChars[j];
-                        if (j >= 38 && j < 54)
-                            strMac += lineChars[j];
-                    }
-                    strIp = strIp.Trim();
-                    strMac = strMac.Trim();
-                    if (strIp.Length > 6)
-                    {
-                        bool found = false;
-                        foreach (string ip in ipList)
+                        if (failedSwitches != null)
                         {
-                            if (ip.Equals(strIp))
+                            failedSwitches.Add(sw.Name);
+                        }
+                        else
+                        {
+                            if (InvokeRequired)
+                                Invoke(new ShowWarning(showWarning), "Failed to collect data for switch " + sw.Name, "Error", false);
+                        }
+
+                        return;
+                    }
+
+                    sshclient.Connect();
+                    reply = sshclient.RunCommand("show interface status").Result;
+                    sshclient.Disconnect();
+                    lines = getResultData(reply, "Port");
+                    if (lines != null && lines.Length > 1)
+                    {
+                        for (int i = 1; i < lines.Length; i++)
+                        {
+                            char[] lineChars = lines[i].ToCharArray();
+                            string strInt = "";
+                            string strStatus = "";
+                            string strVlan = "";
+                            string strDuplex = "";
+                            string strSpeed = "";
+                            string strType = "";
+                            for (int j = 0; j < lineChars.Length; j++)
                             {
-                                foreach (string mac in ipList.GetValues(ip))
+                                if (j < 10)
+                                    strInt += lineChars[j];
+                                if (j >= 30 && j < 43)
+                                    strStatus += lineChars[j];
+                                if (j >= 43 && j < 54)
+                                    strVlan += lineChars[j];
+                                if (j >= 54 && j < 61)
+                                    strDuplex += lineChars[j];
+                                if (j >= 61 && j < 68)
+                                    strSpeed += lineChars[j];
+                                if (j >= 68)
+                                    strType += lineChars[j];
+                            }
+                            strInt = strInt.Trim();
+                            strStatus = strStatus.Trim();
+                            strVlan = strVlan.Trim();
+                            strDuplex = strDuplex.Trim();
+                            strSpeed = strSpeed.Trim();
+                            strType = strType.Trim();
+                            if (strInt.Length > 0)
+                            {
+                                SwitchPort prt = sw.getPort(strInt);
+                                if (prt != null)
                                 {
-                                    if (mac.Equals(strMac))
-                                        found = true;
+                                    prt.Status = strStatus;
+                                    prt.Vlan = strVlan;
+                                    prt.Duplex = strDuplex;
+                                    prt.Speed = strSpeed;
+                                    prt.Type = strType;
                                 }
                             }
                         }
-                        if (!found)
-                            ipList.Add(strIp, strMac);
                     }
-                }
-                //MessageBox.Show(reply);
-                foreach (SwitchPort prt in sw.Ports)
-                {
-                    reply = tc.SendCommand("show mac address interface " + prt.Name);
-                    lines = reply.Split("\r".ToCharArray());
-                    foreach (string line in lines)
+
+                    sshclient.Connect();
+                    reply = sshclient.RunCommand("show ip arp").Result;
+                    sshclient.Disconnect();
+                    lines = getResultData(reply, "Protocol");
+                    if (lines != null && lines.Length > 1)
                     {
-                        if (line.Length > 21)
+                        for (int i = 1; i < lines.Length; i++)
                         {
-                            string lineMac = line.Substring(9, 14);
-                            if (Regex.IsMatch(lineMac, @"([0-9a-f]{4}\.){2}[0-9a-f]{4}"))
+                            char[] lineChars = lines[i].ToCharArray();
+                            string strIp = "";
+                            string strMac = "";
+                            for (int j = 0; j < lineChars.Length; j++)
                             {
-                                if (!prt.getMacs().Contains(lineMac))
-                                    prt.addMac(lineMac);
+                                if (j >= 10 && j < 27)
+                                    strIp += lineChars[j];
+                                if (j >= 38 && j < 54)
+                                    strMac += lineChars[j];
+                            }
+                            strIp = strIp.Trim();
+                            strMac = strMac.Trim();
+                            if (strIp.Length > 6)
+                            {
+                                bool found = false;
+                                foreach (string ip in ipList)
+                                {
+                                    if (ip.Equals(strIp))
+                                    {
+                                        foreach (string mac in ipList.GetValues(ip))
+                                        {
+                                            if (mac.Equals(strMac))
+                                                found = true;
+                                        }
+                                    }
+                                }
+                                if (!found)
+                                    ipList.Add(strIp, strMac);
                             }
                         }
                     }
-                    if (InvokeRequired)
-                        Invoke(new UpdateProgress(updateProgress), Math.Max(100/sw.Ports.Count,1), true);
+
+                    sshclient.Connect();
+                    reply = sshclient.RunCommand("show mac address").Result;
+                    sshclient.Disconnect();
+                    lines = getResultData(reply, "mac address");
+                    if (lines != null && lines.Length > 1)
+                    {
+                        List<string> lineList = lines.ToList();
+                        // Remove irrelevant multicast entries
+                        if (lineList.FindIndex(r => r.Contains("Multicast Entries")) >= 0)
+                        {
+                            lineList.RemoveRange(lineList.FindIndex(r => r.Contains("Multicast Entries")), lineList.Count - lineList.FindIndex(r => r.Contains("Multicast Entries")));
+                        }
+
+                        foreach (SwitchPort prt in sw.Ports)
+                        {
+                            foreach (string line in lineList)
+                            {
+                                var portname = Regex.Match(line, @"[a-zA-Z]+[0-9](/[0-9]+){1,}");
+                                if (portname.Success && prt.Name.Equals(Regex.Replace(portname.Value, @"([a-zA-Z][a-zA-Z])[a-zA-Z]*([0-9].*)", "$1$2")))
+                                {
+                                    var macAdd = Regex.Match(line, @"([0-9a-f]{4}\.){2}[0-9a-f]{4}");
+                                    if (macAdd.Success && !prt.getMacs().Contains(macAdd.Value))
+                                        prt.addMac(macAdd.Value);
+                                }
+                            }
+                            if (InvokeRequired)
+                                Invoke(new UpdateProgress(updateProgress), Math.Max(100 / sw.Ports.Count, 1), true);
+                        }
+                    }
                 }
-                
-            }
-            finally
-            {
-                tc.Disconnect();
+                catch (Exception ex)
+                {
+                    if (failedSwitches != null)
+                    {
+                        failedSwitches.Add(sw.Name);
+                    }
+                    else
+                    {
+                        if (InvokeRequired)
+                            Invoke(new ShowWarning(showWarning), "Failed to update switch " + sw.Name + "\r\n\r\n" + ex.Message, "Error", false);
+                    }
+                }
+                finally
+                {
+                    sshclient.Disconnect();
+                    sshclient.Dispose();
+                }
             }
         }
 
