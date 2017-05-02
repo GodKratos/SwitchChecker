@@ -19,7 +19,6 @@ namespace SwitchChecker
 
         private void SetValues()
         {
-            txtTimeout.Text = Properties.Settings.Default.Timeout.ToString();
             chkExcludeTrunks.Checked = Properties.Settings.Default.ExcludeTrunksSearch;
             txtUserName.Text = Properties.Settings.Default.DefaultUserName;
             txtPassword.Text = Functions.DecryptPassword(Properties.Settings.Default.DefaultEncryptedPassword);
@@ -27,14 +26,6 @@ namespace SwitchChecker
 
         private void StoreValues()
         {
-            int timeout;
-            if (!int.TryParse(txtTimeout.Text, out timeout))
-            {
-                MessageBox.Show("Telnet Timeout must be a number value");
-                return;
-            }
-
-            Properties.Settings.Default.Timeout = Math.Max(timeout, 1);
             Properties.Settings.Default.ExcludeTrunksSearch = chkExcludeTrunks.Checked;
             Properties.Settings.Default.DefaultUserName = txtUserName.Text;
             Properties.Settings.Default.DefaultEncryptedPassword = Functions.EncryptPassword(txtPassword.Text);
